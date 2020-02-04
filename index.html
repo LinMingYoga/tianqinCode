@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>首页</title>
+	<link rel="stylesheet" href="./css/rest.css">
+	<link rel="stylesheet" href="./css/index.css">
+	<link rel="stylesheet" href="./css/swiper.min.css">
+	<link rel="stylesheet" href="./css/font-awesome.min.css">
+
+</head>
+
+<body>
+	<!-- 头部Start -->
+	<header>
+		<div class="wrap">
+			<div class="top-left">
+				<div class="logo">
+					LOGO
+				</div>
+			</div>
+			<div class="top-right">
+				<i class="fa fa-gear col"></i>
+				<i class="fa fa-bell col"></i>
+				<div class="logOut">
+					Log Out
+				</div>
+			</div>
+		</div>
+	</header>
+	<!-- 头部End -->
+	<!-- 内容主体Start -->
+	<div class="main">
+		<div class="main-menu w">
+			<div class="menu-left">
+				<h3>Audience Overview</h3>
+				<br />
+				<p>Roseville, CA</p>
+			</div>
+			<div class="menu-right">
+				<ul class="menuLi">
+					<li class="active"><a>DASHBOARD</a></li>
+					<li><a>PROJECTS</a></li>
+					<li><a>CALENDAR</a></li>
+					<li><a>MAILBOX</a></li>
+					<li><a>SETTINGS</a></li>
+				</ul>
+			</div>
+			<!-- <div class="menu-right"></div> -->
+		</div>
+		<div class="main-show w">
+			<!-- 轮播图 -->
+			<div class="main-banner">
+				<div class="swiper-container">
+					<div class="swiper-wrapper">
+						<div class="swiper-slide"><img src="./img/1.jpg" alt=""></div>
+						<div class="swiper-slide"><img src="./img/2.jpeg" alt=""></div>
+						<div class="swiper-slide"><img src="./img/3.jpg" alt=""></div>
+					</div>
+					<!-- 如果需要分页器 -->
+					<div class="swiper-pagination" slot="pagination"></div>
+
+					<!-- 如果需要导航按钮 -->
+					<div class="swiper-button-prev"></div>
+					<div class="swiper-button-next"></div>
+				</div>
+			</div>
+			<div class="show-number">
+				<div class="number-top">
+					<h3>Support Requests</h3>
+					<div class="number-view">view All</div>
+				</div>
+				<div class="number-main">
+					<table width="100%">
+						<tr>
+							<th>TIME</th>
+							<th>USER NAME</th>
+							<th>STATUS</th>
+						</tr>
+						<tbody>
+							<tr>
+								<td>9:45pm</td>
+								<td>info@design.com</td>
+								<td class="centerFlex">
+									<div class="numberBtn">Solved</div>
+								</td>
+							</tr>
+							<tr>
+								<td>9:45pm</td>
+								<td>info@design.com</td>
+								<td class="centerFlex">
+									<div class="numberBtn">Solved</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- eChart -->
+		<div id="eChart" class="e-chart w"></div>
+		<div class="anotherEchart w">
+			<div id="echartPie" class="echartPie"></div>
+			<div id="echartBar" class="echartBar"></div>
+		</div>
+	</div>
+	<!-- 内容主体End -->
+	<div class="footer">
+		<div class="w">
+			<div class="footer-msg">
+				<div class="logo">LOGO</div>
+				<ul>
+					<li>NEWS</li>
+					<li>CHANNELS</li>
+					<li>OVERVIEW</li>
+					<li>TIMELINE</li>
+				</ul>
+				<ul>
+					<li>SPORT</li>
+					<li>CULTURE</li>
+					<li>NATURE</li>
+					<li>MUSIC</li>
+				</ul>
+				<ul>
+					<li>WEATHER</li>
+					<li>AUTOS</li>
+					<li>LOCAL </li>
+					<li>SHOP</li>
+				</ul>
+				<ul>
+					<li>FUTURE</li>
+					<li>FOOD</li>
+					<li>EARTH</li>
+					<li>TV</li>
+				</ul>
+				<ul>
+					<li>TRAVEL</li>
+					<li>RADIO</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<script src="./js/jquery-2.2.2.min.js"></script>
+	<script src="./js/echarts.min.js"></script>
+	<script src="./js/swiper.jquery.min.js"></script>
+	<script>
+		$(function () {
+			// 轮播图
+			var mySwiper = new Swiper('.swiper-container', {
+				direction: 'horizontal',
+				initialSlide: 0,
+				speed: 1000,
+				autoplay: 3000,
+				slidesPerView: 1,
+				pagination: '.swiper-pagination',
+				paginationClickable: true,
+				navigation: {
+					nextEl: '.swiper-button-next',
+					prevEl: '.swiper-button-prev',
+				},
+			})
+		})
+	</script>
+	<script>
+		$(function () {
+			var mySeries
+			var myxAxis
+			// 获取数据
+			function getData(type) {
+				$.ajax({
+					url: `https://edu.telking.com/api/?type=${type}`,
+					type: 'get',
+					async: false,
+					success: function (res) {
+						if (res.code === 200) {
+							mySeries = res.data.series
+							myxAxis = res.data.xAxis
+						}
+					}
+				})
+				return {
+					mySeries,
+					myxAxis
+				}
+			}
+
+			var mountData = getData('month')
+			var weekData = getData('week')
+			console.log('weekData', weekData)
+			console.log('weekData', JSON.stringify(weekData.myxAxis)) // 星期
+			console.log('weekData', JSON.stringify(weekData.mySeries)) // 数值
+			var myData = []
+			weekData.myxAxis.map((item, index) => {
+				let data = {
+					name: item,
+					value: weekData.mySeries[index]
+				}
+				myData.push(data)
+			})
+
+			var myChart = echarts.init(document.getElementById("eChart"));
+			var echartPie = echarts.init(document.getElementById("echartPie"));
+			var echartBar = echarts.init(document.getElementById("echartBar"));
+			var option = {
+				xAxis: {
+					type: 'category',
+					boundaryGap: true,
+					data: mountData.myxAxis
+				},
+				tooltip: {
+					trigger: 'item',
+					formatter: '{a}：{b}<br/>人数：{c}'
+				},
+				title: {
+					text: '曲线图数据展示',
+					textVerticalAlign: 'auto',
+					x: 'center',
+					y: 'top',
+					textAlign: 'center'
+				},
+				yAxis: {
+					name: '人数',
+					type: 'value',
+					axisLabel: {
+						formatter: '{value} 人'
+					}
+				},
+				series: [{
+					name: '日期',
+					data: mountData.mySeries,
+					type: 'line',
+					areaStyle: {
+						color: 'skyblue'
+					},
+					smooth: true,
+					itemStyle: {
+						normal: {
+							color: "#386db3", //折线点的颜色
+							lineStyle: {
+								color: "#386db3" //折线的颜色
+							}
+						}
+					}
+				}]
+			};
+			var option1 = {
+				title: {
+					text: '饼状图数据展示',
+					left: 'center'
+				},
+				tooltip: {
+					trigger: 'item',
+					formatter: '{a}:{c}<br/>日期：{b}<br/>百分比：{d}%'
+				},
+				// 图例
+				legend: {
+					orient: 'vertical',
+					left: 'top',
+					data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+				},
+				series: [{
+					name: '人数',
+					type: 'pie',
+					radius: '55%',
+					center: ['50%', '65%'],
+					data: myData,
+					emphasis: {
+						itemStyle: {
+							shadowBlur: 10,
+							shadowOffsetX: 0,
+							shadowColor: 'rgba(0, 0, 0, 0.5)'
+						}
+					}
+				}]
+			}
+			var option3 = {
+				color: 'skyblue',
+				tooltip: {
+					trigger: 'item',
+					formatter: '{a}：{c}<br/>日期：{b}'
+				},
+				title: {
+					text: '柱状图数据展示',
+					textVerticalAlign: 'auto',
+					x: 'center',
+					y: 'top',
+					textAlign: 'center'
+				},
+				xAxis: {
+					name: '日期',
+					type: 'category',
+					data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+				},
+				yAxis: {
+					name: '商品数',
+					type: 'value'
+				},
+				series: [{
+					name: '商品数',
+					data: [120, 200, 150, 80, 70, 110, 130],
+					type: 'bar'
+				}]
+			};
+			// 使用刚指定的配置项和数据显示图表。
+
+			myChart.setOption(option);
+			echartPie.setOption(option1);
+			echartBar.setOption(option3);
+		})
+	</script>
+	<script>
+		$(function () {
+			$('.menuLi > li').click(function () {
+				$(this).addClass('active').siblings().removeClass('active')
+			})
+		})
+	</script>
+</body>
+
+</html>
